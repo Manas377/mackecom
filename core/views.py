@@ -27,7 +27,7 @@ class ProductDetailView(DetailView):
 
 def add_to_cart(request, slug):
     item = get_object_or_404(Item, slug=slug)
-    ordered_item = OrderedItem.objects.get_or_create(item=item)
+    ordered_item, created = OrderedItem.objects.get_or_create(item=item, user=request.user, is_ordered=False)
     cart_qs = Cart.objects.filter(user=request.user, ordered=False)
     if cart_qs.exists():
         cart = cart_qs[0]
@@ -39,6 +39,34 @@ def add_to_cart(request, slug):
     else:
         order_date = timezone.now()
         cart = Cart.objects.create(user=request.user, order_date=order_date)
-        cart.items.add(ordered_item)
+        cart.items.add(ordered_item.pk)
     return redirect("core:product", slug=slug)
     # return render(request, "product-page.html", {'slug': slug})
+
+
+def remove_from_cart(request, slug):
+    item = get_object_or_404(Item, slug=slug)
+    ordered_item = OrderedItem.objects.get(item=item, user=request.user, is_ordered=False)
+    cart_qs = Cart.objects.filter(user=request.user, ordered=False)
+    if cart_qs.exists():
+        cart = cart_qs[0]
+        if cart.items.filter(item__slug=item.slug).exists():
+            cart.items.remove(ordered_item)
+            ordered_item.delete()
+        else:  # Also Send a Message that the item does not exist in cart
+            return redirect("core:product", slug=slug)
+    return redirect("core:product", slug=slug)
+
+
+def reduce_from_cart(request, slug):
+    item = get_object_or_404(Item, slug=slug)
+    ordered_item = OrderedItem.objects.get(item=item, user=request.user, is_ordered=False)
+    cart_qs = Cart.objects.filter(user=request.user, ordered=False)
+    if cart_qs.exists():
+        cart = cart_qs[0]
+        if cart.items.filter(item__slug=item.slug).exists():
+            ordered_item.qty -= 1
+            ordered_item.save ()
+            if ordered_item.qty == 0:
+                ordered_item.delete()
+    return redirect("core:product", slug=slug)

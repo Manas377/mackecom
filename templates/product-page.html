@@ -55,8 +55,14 @@
 {#            </form>#}
                 <a class="btn btn-primary btn-md my-0 p"
                     href="{{ object.get_add_to_cart_url }}">Add to cart
-{#                <i class="fas fa-shopping-cart ml-1"></i>
-{#              </a>
+                 <i class="fas fa-shopping-cart ml-1"></i>
+                </a>
+{#                {% if object__item.qty %}#}
+                <a class="btn btn-danger btn-md my-0 p"
+                    href="{% url 'core:remove_from_cart' slug=object.slug%}">Remove
+
+              </a>
+{#                {% endif %}#}
           </div>
           <!--Content-->
 

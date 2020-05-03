@@ -51,17 +51,19 @@ class Item(models.Model):
 
 class OrderedItem(models.Model):
     item = models.ForeignKey(Item, on_delete=models.CASCADE)
+    user = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE)
+    is_ordered = models.BooleanField(default=False)
     qty = models.IntegerField(default=1)
 
     def __str__(self):
-        return self.item.title
+        return f"Item: {self.item.title}, qty: {self.qty}"
 
 
 class Cart(models.Model):
     user = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE)
     items = models.ManyToManyField(OrderedItem)
     ordered = models.BooleanField(default=False)
-    order_date = models.DateTimeField()
+    order_date = models.DateTimeField(blank=True, null=True)
     start_date = models.DateTimeField(auto_now_add=True)
 
     def __str__(self):
