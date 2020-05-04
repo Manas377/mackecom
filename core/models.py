@@ -32,10 +32,10 @@ class Item(models.Model):
     def __str__(self):
         return self.title
 
-    def save(self, *args, **kwargs):
-        object_pk = self.objects.filter(self.objects.pk).latest()
-        self.slug = slugify(self.title)+slugify(object_pk.pk)  # set the slug explicitly
-        super(Item, self).save(*args, **kwargs)
+    # def save(self, *args, **kwargs):
+    #     object_pk = self.objects.filter(self.objects.pk).latest()
+    #     self.slug = slugify(self.title)+slugify(object_pk.pk)  # set the slug explicitly
+    #     super(Item, self).save(*args, **kwargs)
 
     def get_add_to_cart_url(self):
         return reverse("core:add_product", kwargs={"slug": self.slug})
