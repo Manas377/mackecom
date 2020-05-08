@@ -16,6 +16,7 @@ INSTALLED_APPS = [
     'django.contrib.staticfiles',
     'core',
     'django_extensions',
+    'crispy_forms',
 
     # All-Auth Apps
     'django.contrib.sites',
@@ -74,7 +75,7 @@ DATABASES = {
 if ENVIRONMENT == 'production':
     DEBUG = False
     SECRET_KEY = os.getenv('SECRET_KEY')
-    SESSION_COOKIE_SECURE = True3
+    SESSION_COOKIE_SECURE = True
     SECURE_BROWSER_XSS_FILTER = True
     SECURE_CONTENT_TYPE_NOSNIFF = True
     SECURE_HSTS_INCLUDE_SUBDOMAINS = True
@@ -90,3 +91,7 @@ AUTHENTICATION_BACKENDS = (
 )
 
 SITE_ID = 1
+
+LOGIN_REDIRECT_URL = '/'
+
+CRISPY_TEMPLATE_PACK = "bootstrap4"

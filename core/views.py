@@ -1,10 +1,12 @@
 from django.shortcuts import render
 from .models import Item, OrderedItem, Cart
-from django.views.generic import ListView, DetailView
-from django.shortcuts import get_object_or_404, redirect
+from django.views.generic import ListView, DetailView, View
+from django.shortcuts import get_object_or_404, redirect, get_list_or_404
 from django.utils import timezone
 from django.contrib import messages
-
+from django.core.exceptions import ObjectDoesNotExist
+from django.contrib.auth.decorators import login_required
+from django.contrib.auth.mixins import LoginRequiredMixin
 
 # def home_view(request):
 #     context = {
@@ -13,7 +15,8 @@ from django.contrib import messages
 #     return render(request, 'home-page.html', context)
 
 class HomeView(ListView):
-    model = {Item, OrderedItem}
+    model = Item
+    paginate_by = 4
     template_name = 'home-page.html'
 
 
@@ -26,6 +29,7 @@ class ProductDetailView(DetailView):
     template_name = 'product-page.html'
 
 
+@login_required()
 def add_to_cart(request, slug):
     item = get_object_or_404(Item, slug=slug)
     ordered_item, created = OrderedItem.objects.get_or_create(item=item, user=request.user, is_ordered=False)
@@ -45,7 +49,7 @@ def add_to_cart(request, slug):
     return redirect("core:product", slug=slug)
     # return render(request, "product-page.html", {'slug': slug})
 
-
+@login_required
 def remove_from_cart(request, slug):
     item = get_object_or_404(Item, slug=slug)
     ordered_item = OrderedItem.objects.get(item=item, user=request.user, is_ordered=False)
@@ -73,3 +77,21 @@ def reduce_from_cart(request, slug):
             if ordered_item.qty == 0:
                 ordered_item.delete()
     return redirect("core:product", slug=slug)
+
+
+class SummaryView(View):
+    def get(self, *args, **kwargs):
+        try:
+            cart = get_object_or_404(Cart, user=self.request.user, ordered=False)
+            if cart:
+                context = {
+                    'object': cart
+                }
+            return render(self.request, 'cart-summary.html', context)
+
+        except ObjectDoesNotExist:
+            messages.error(self.request, "You do not have an active order" )
+            return redirect("core:home")
+
+
+

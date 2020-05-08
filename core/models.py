@@ -2,6 +2,7 @@ from django.db import models
 from django.conf import settings
 from django.utils.text import slugify
 from django.urls import reverse
+from django.shortcuts import render
 
 
 CATEGORY_CHOICES = (
@@ -32,6 +33,10 @@ class Item(models.Model):
     def __str__(self):
         return self.title
 
+    def get_absolute_url(self):
+        return reverse("core:product", kwargs={
+            "slug": self.slug})
+
     # def save(self, *args, **kwargs):
     #     object_pk = self.objects.filter(self.objects.pk).latest()
     #     self.slug = slugify(self.title)+slugify(object_pk.pk)  # set the slug explicitly
@@ -39,14 +44,6 @@ class Item(models.Model):
 
     def get_add_to_cart_url(self):
         return reverse("core:add_product", kwargs={"slug": self.slug})
-
-    # def unique_slug_gen(cls):
-    #     cls.slug = slugify(cls.title)
-    #     while cls.objects.filter(slug=cls.slug).exists():
-    #         object_pk = cls.objects.latest('pk')
-    #         object_pk = object_pk.pk + 1
-    #         cls.slug = f'{cls.slug}-{object_pk}
-    #         return cls.slug
 
 
 class OrderedItem(models.Model):
@@ -58,6 +55,12 @@ class OrderedItem(models.Model):
     def __str__(self):
         return f"Item: {self.item.title}, qty: {self.qty}"
 
+    def total_price(self):
+        if self.item.discounted_price:
+            return self.qty*self.item.discounted_price
+        else:
+            return round(self.qty*self.item.price, 2)
+
 
 class Cart(models.Model):
     user = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE)
@@ -68,3 +71,14 @@ class Cart(models.Model):
 
     def __str__(self):
         return self.user.username
+
+    def cart_total(self):
+        total = 0
+        items = self.items.all()
+        for item in items:
+            price = int(item.total_price())
+            total = price + total
+        return total
+
+
+

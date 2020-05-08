@@ -1,0 +1,67 @@
+{% extends 'base.html' %}
+
+
+{% block content %}
+
+
+  <!--Main layout-->
+<main>
+  <div class="mt-5 container">
+{#      {% for i in object.items.all %}#}
+{##}
+{#          <h1>{{ i.item.title }}</h1>#}
+{#          <h1>{{ i.item.price }}</h1>#}
+{#          <h1>{{ i.item.title }}</h1>#}
+{#      {% endfor %}#}
+        {% if request.user.is_authenticated %}
+         <h1>Order Summary</h1>
+              <div class="table-responsive text-nowrap">
+
+                  <table class="table">
+
+                    <thead>
+                      <tr>
+                        <th scope="col">#</th>
+                        <th scope="col">Product</th>
+                        <th scope="col">Quantity</th>
+                        <th scope="col">Price</th>
+                        <th scope="col">Discounted Price</th>
+                        <th scope="col">Total Price</th>
+                      </tr>
+                    </thead>
+
+                    <tbody>
+                    {% for item in object.items.all %}
+                        <tr>
+                            <th scope="row">{{ forloop.counter}}</th>
+                            <td>{{ item.item.title }}</td>
+                            <td>{{ item.qty }}</td>
+                            <td>₹ {{ item.item.price }}</td>
+
+                            {% if item.item.discounted_price %}
+                                <td>₹ {{ item.item.discounted_price }}</td>
+                            {% else %}
+                                <td>N.A</td>
+                            {% endif %}
+                            <td>₹ {{ item.total_price }}</td>
+                        </tr>
+                    {% endfor %}
+                    <tr>
+                        <td colspan="4"> </td>
+                        <td><strong>Order Total: </strong></td>
+                        <td><strong>₹ {{ object.cart_total }}</strong></td>
+                    </tr>
+                    </tbody>
+                  </table>
+               </div>
+
+            {% else %}
+
+                <h1> Sign In to View Your Cart</h1>
+
+        {% endif %}
+  </div>
+</main>
+  <!--Main layout-->
+
+{% endblock content %}
