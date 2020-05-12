@@ -1,11 +1,9 @@
-{% extends 'base.html' %}
 
-
-{% block content %}
 
   <!--Main layout-->
   <main class="mt-5 pt-4">
     <div class="container wow fadeIn">
+
 
       <!-- Heading -->
       <h2 class="my-5 h2 text-center">Checkout form</h2>
@@ -19,174 +17,100 @@
           <!--Card-->
           <div class="card">
 
+{#              <div class="card-body">#}
+{#<form method="post">#}
+{#    {% csrf_token %}#}
+{#    {{ form|crispy }}#}
+{#    <input type="submit">#}
+{#</form>#}
+{#                  </div>#}
+
             <!--Card content-->
-            <form class="card-body">
+            <form class="card-body" method="post">
+            {% csrf_token %}
 
-              <!--Grid row-->
-              <div class="row">
-
-                <!--Grid column-->
-                <div class="col-md-6 mb-2">
-
-                  <!--firstName-->
-                  <div class="md-form ">
-                    <input type="text" id="firstName" class="form-control">
-                    <label for="firstName" class="">First name</label>
-                  </div>
-
-                </div>
-                <!--Grid column-->
-
-                <!--Grid column-->
-                <div class="col-md-6 mb-2">
-
-                  <!--lastName-->
-                  <div class="md-form">
-                    <input type="text" id="lastName" class="form-control">
-                    <label for="lastName" class="">Last name</label>
-                  </div>
-
-                </div>
-                <!--Grid column-->
-
-              </div>
-              <!--Grid row-->
-
-              <!--Username-->
-              <div class="md-form input-group pl-0 mb-5">
-                <div class="input-group-prepend">
-                  <span class="input-group-text" id="basic-addon1">@</span>
-                </div>
-                <input type="text" class="form-control py-0" placeholder="Username" aria-describedby="basic-addon1">
-              </div>
-
-              <!--email-->
+                <!--Apartment-->
               <div class="md-form mb-5">
-                <input type="text" id="email" class="form-control" placeholder="youremail@example.com">
-                <label for="email" class="">Email (optional)</label>
+                  {{ form.apartment }}
               </div>
 
-              <!--address-->
+                <!--address-->
               <div class="md-form mb-5">
-                <input type="text" id="address" class="form-control" placeholder="1234 Main St">
-                <label for="address" class="">Address</label>
+                  {{ form.address1 }}
               </div>
 
               <!--address-2-->
               <div class="md-form mb-5">
-                <input type="text" id="address-2" class="form-control" placeholder="Apartment or suite">
-                <label for="address-2" class="">Address 2 (optional)</label>
+              {{ form.address2 }}
               </div>
 
               <!--Grid row-->
               <div class="row">
-
-                <!--Grid column-->
-                <div class="col-lg-4 col-md-12 mb-4">
-
-                  <label for="country">Country</label>
-                  <select class="custom-select d-block w-100" id="country" required>
-                    <option value="">Choose...</option>
-                    <option>United States</option>
-                  </select>
-                  <div class="invalid-feedback">
-                    Please select a valid country.
-                  </div>
-
-                </div>
-                <!--Grid column-->
 
                 <!--Grid column-->
                 <div class="col-lg-4 col-md-6 mb-4">
 
                   <label for="state">State</label>
-                  <select class="custom-select d-block w-100" id="state" required>
+
+                  <select class="custom-select d-block w-100" id="state" name="state" required>
                     <option value="">Choose...</option>
-                    <option>California</option>
+
+                      {% for x,y in form.fields.state.choices %}
+                          <option value="{{ x }}" {% if form.state.value == x%}selected{% endif %}>{{ y }}</option>
+                      {% endfor %}
                   </select>
-                  <div class="invalid-feedback">
-                    Please provide a valid state.
-                  </div>
 
                 </div>
-                <!--Grid column-->
 
                 <!--Grid column-->
                 <div class="col-lg-4 col-md-6 mb-4">
 
                   <label for="zip">Zip</label>
-                  <input type="text" class="form-control" id="zip" placeholder="" required>
+                  {{ form.zip }}
                   <div class="invalid-feedback">
                     Zip code required.
                   </div>
 
                 </div>
-                <!--Grid column-->
 
+                <div class="col-lg-4 col-md-6 mb-4">
+
+                  <label for="city">city</label>
+                  {{ form.city }}
+                  <div class="invalid-feedback">
+                    city code required.
+                  </div>
+
+                </div>
               </div>
               <!--Grid row-->
 
               <hr>
 
               <div class="custom-control custom-checkbox">
-                <input type="checkbox" class="custom-control-input" id="same-address">
-                <label class="custom-control-label" for="same-address">Shipping address is the same as my billing address</label>
+                <input type="checkbox" value=1 class="custom-control-input" id="{{ form.same_billing_address.id_for_label }}"
+                name="same-billing">
+                <label class="custom-control-label" for="{{ form.same_billing_address.id_for_label }}">
+                    Shipping address is the same as my billing address</label>
               </div>
+
               <div class="custom-control custom-checkbox">
-                <input type="checkbox" class="custom-control-input" id="save-info">
-                <label class="custom-control-label" for="save-info">Save this information for next time</label>
+                <input value=1 type="checkbox" class="custom-control-input" id="{{ form.save_info.id_for_label}}"
+                name="save-info">
+                <label class="custom-control-label" for="{{ form.save_info.id_for_label }}">Save this information for next time</label>
               </div>
 
               <hr>
 
               <div class="d-block my-3">
-                <div class="custom-control custom-radio">
-                  <input id="credit" name="paymentMethod" type="radio" class="custom-control-input" checked required>
-                  <label class="custom-control-label" for="credit">Credit card</label>
+                {% for x,y in form.fields.payment_info.choices %}
+                  <div class="custom-control custom-radio">
+                  <input id="{{ x }}" name="payment_info" value="{{ x }}" type="radio" class="custom-control-input" required>
+                  <label class="custom-control-label" for="{{ x }}">{{ y }}</label>
                 </div>
-                <div class="custom-control custom-radio">
-                  <input id="debit" name="paymentMethod" type="radio" class="custom-control-input" required>
-                  <label class="custom-control-label" for="debit">Debit card</label>
-                </div>
-                <div class="custom-control custom-radio">
-                  <input id="paypal" name="paymentMethod" type="radio" class="custom-control-input" required>
-                  <label class="custom-control-label" for="paypal">Paypal</label>
-                </div>
+                  {% endfor %}
               </div>
-              <div class="row">
-                <div class="col-md-6 mb-3">
-                  <label for="cc-name">Name on card</label>
-                  <input type="text" class="form-control" id="cc-name" placeholder="" required>
-                  <small class="text-muted">Full name as displayed on card</small>
-                  <div class="invalid-feedback">
-                    Name on card is required
-                  </div>
-                </div>
-                <div class="col-md-6 mb-3">
-                  <label for="cc-number">Credit card number</label>
-                  <input type="text" class="form-control" id="cc-number" placeholder="" required>
-                  <div class="invalid-feedback">
-                    Credit card number is required
-                  </div>
-                </div>
-              </div>
-              <div class="row">
-                <div class="col-md-3 mb-3">
-                  <label for="cc-expiration">Expiration</label>
-                  <input type="text" class="form-control" id="cc-expiration" placeholder="" required>
-                  <div class="invalid-feedback">
-                    Expiration date required
-                  </div>
-                </div>
-                <div class="col-md-3 mb-3">
-                  <label for="cc-expiration">CVV</label>
-                  <input type="text" class="form-control" id="cc-cvv" placeholder="" required>
-                  <div class="invalid-feedback">
-                    Security code required
-                  </div>
-                </div>
-              </div>
-              <hr class="mb-4">
+
               <button class="btn btn-primary btn-lg btn-block" type="submit">Continue to checkout</button>
 
             </form>
@@ -208,58 +132,48 @@
 
           <!-- Cart -->
           <ul class="list-group mb-3 z-depth-1">
+
+            {% for obj in cart.items.all %}
             <li class="list-group-item d-flex justify-content-between lh-condensed">
               <div>
-                <h6 class="my-0">Product name</h6>
-                <small class="text-muted">Brief description</small>
+                <h6 class="my-0">{{ obj.item.title }}</h6>
+                <small class="text-muted">{{ obj.item.description|truncatechars:40}}</small>
               </div>
-              <span class="text-muted">$12</span>
+              <span class="text-muted">{{ obj.item.price }}</span>
             </li>
-            <li class="list-group-item d-flex justify-content-between lh-condensed">
-              <div>
-                <h6 class="my-0">Second product</h6>
-                <small class="text-muted">Brief description</small>
-              </div>
-              <span class="text-muted">$8</span>
-            </li>
-            <li class="list-group-item d-flex justify-content-between lh-condensed">
-              <div>
-                <h6 class="my-0">Third item</h6>
-                <small class="text-muted">Brief description</small>
-              </div>
-              <span class="text-muted">$5</span>
-            </li>
-            <li class="list-group-item d-flex justify-content-between bg-light">
-              <div class="text-success">
-                <h6 class="my-0">Promo code</h6>
-                <small>EXAMPLECODE</small>
-              </div>
-              <span class="text-success">-$5</span>
-            </li>
+              {% endfor %}
+
+{#            <li class="list-group-item d-flex justify-content-between bg-light">#}
+{#              <div class="text-success">#}
+{#                <h6 class="my-0">Promo code</h6>#}
+{#                <small>EXAMPLECODE</small>#}
+{#              </div>#}
+{#              <span class="text-success">-$5</span>#}
+{#            </li>#}
+
             <li class="list-group-item d-flex justify-content-between">
-              <span>Total (USD)</span>
-              <strong>$20</strong>
+              <span>Total (INR)</span>
+              <strong>₹ {{ cart.cart_total }}</strong>
             </li>
           </ul>
           <!-- Cart -->
 
-          <!-- Promo code -->
-          <form class="card p-2">
-            <div class="input-group">
-              <input type="text" class="form-control" placeholder="Promo code" aria-label="Recipient's username" aria-describedby="basic-addon2">
-              <div class="input-group-append">
-                <button class="btn btn-secondary btn-md waves-effect m-0" type="button">Redeem</button>
-              </div>
-            </div>
-          </form>
-          <!-- Promo code -->
+{#          <!-- Promo code -->#}
+{#          <form class="card p-2">#}
+{#            <div class="input-group">#}
+{#              <input type="text" class="form-control" placeholder="Promo code" aria-label="Recipient's username" aria-describedby="basic-addon2">#}
+{#              <div class="input-group-append">#}
+{#                <button class="btn btn-secondary btn-md waves-effect m-0" type="button">Redeem</button>#}
+{#              </div>#}
+{#            </div>#}
+{#          </form>#}
+{#          <!-- Promo code -->#}
 
         </div>
         <!--Grid column-->
 
       </div>
       <!--Grid row-->
-
     </div>
   </main>
   <!--Main layout-->

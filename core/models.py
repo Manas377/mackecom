@@ -5,6 +5,7 @@ from django.urls import reverse
 from django.shortcuts import render
 
 
+
 CATEGORY_CHOICES = (
     ('S', 'SHIRT'),
     ('SW', 'SPORTS WEAR'),
@@ -79,6 +80,59 @@ class Cart(models.Model):
             price = int(item.total_price())
             total = price + total
         return total
+
+
+PAYMENT_MODE = [
+    ("UPI", "UPI"),
+    ("NB", "Net Banking"),
+    ("CDC", "Credit/Debit Card")
+]
+
+
+STATE = [
+    ("ND", "New Delhi"),
+    ("UP", "Uttar Pradesh"),
+    ("MP", "Madhya Pradesh"),
+    ("MH", "Maharashtra"),
+    ("GJ", "Gujrat"),
+    ("AP", "Arunachal Pradesh"),
+]
+
+
+class ShippingAddress(models.Model):
+    user = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE)
+    apartment = models.CharField(max_length=50)
+    address1 = models.CharField(max_length=50)
+    address2 = models.CharField(max_length=50, blank=True, null=True)
+    state = models.CharField(choices=STATE, max_length=3)
+    zip = models.CharField(max_length=50)
+    city = models.CharField(max_length=50)
+
+
+class BillingAddress(models.Model):
+    apartment = models.CharField(max_length=50, blank=True)
+    user = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE, blank=True)
+    address1 = models.CharField(max_length=50, blank=True)
+    address2 = models.CharField(max_length=50, blank=True)
+    state = models.CharField(choices=STATE, max_length=3, blank=True)
+    zip = models.CharField(max_length=50, blank=True)
+    city = models.CharField(max_length=50, blank=True)
+
+
+class Checkout(models.Model):
+    user = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE)
+    billing_same_as_shipping = models.BooleanField(blank=True)
+    shipping_address = models.ForeignKey(ShippingAddress, on_delete=models.DO_NOTHING)
+    billing_address = models.ForeignKey(BillingAddress, on_delete=models.DO_NOTHING)
+    payment_info = models.CharField(choices=PAYMENT_MODE, max_length=3)
+
+    def set_billing(self):
+        if self.billing_same_as_shipping:
+            self.billing_address = self.shipping_address
+            self.save()
+
+
+
 
 
 

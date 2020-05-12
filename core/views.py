@@ -7,6 +7,8 @@ from django.contrib import messages
 from django.core.exceptions import ObjectDoesNotExist
 from django.contrib.auth.decorators import login_required
 from django.contrib.auth.mixins import LoginRequiredMixin
+from .forms import CheckoutForm, ShippingForm, BillingForm, CheckoutFormStructured
+from multi_form_view import MultiFormView
 
 # def home_view(request):
 #     context = {
@@ -14,14 +16,78 @@ from django.contrib.auth.mixins import LoginRequiredMixin
 #     }
 #     return render(request, 'home-page.html', context)
 
+
 class HomeView(ListView):
     model = Item
     paginate_by = 4
     template_name = 'home-page.html'
 
 
-def checkout_view(request):
-    return render(request, 'checkout-page.html')
+class CheckoutView(View):
+    def get(self, *args, **kwargs):
+        form = CheckoutForm
+        cart = get_object_or_404(Cart, user=self.request.user)
+        context = {
+            'form': form,
+            'cart': cart
+        }
+        return render(self.request, 'checkout-page.html', context)
+
+    def post(self, *args, **kwargs):
+        form = CheckoutForm(self.request.POST)
+        print(self.request.POST)
+        if form.is_valid():
+            print("form is valid")
+            return redirect('core:checkout')
+        messages.warning(self.request, "Checkout Failed")
+        return redirect('core:checkout')
+
+
+# class CheckoutModel(View):
+#     def get(self, *args, **kwargs):
+#         sform = ShippingForm()
+#         bform = BillingForm()
+#         cform = CheckoutFormStructured()
+#         context = {
+#             'sform': sform,
+#             'bform': bform,
+#             'cform': cform
+#         }
+#         return render(self.request, 'model-form.html', context)
+#
+#     def post(self, *args, **kwargs):
+#         form = CheckoutForm(self.request.POST)
+#         print(self.request.POST)
+#         if form.is_valid():
+#             print("form is valid")
+#             return redirect('core:checkout-model')
+#         messages.warning(self.request, "Checkout Failed")
+#         print("Form Invalid")
+#         return redirect('core:checkout-model')
+
+
+class MultiCheckoutForm(MultiFormView):
+    template_name = "model-form.html"
+    form_classes = {
+        'sform': ShippingForm,
+        'bform': BillingForm,
+        'cform': CheckoutFormStructured
+    }
+
+    def post(self, request, **kwargs):
+        sform = ShippingForm(self.request.POST)
+        if sform.is_valid():
+            print("sform is valid")
+        cform = CheckoutFormStructured(self.request.POST)
+        if cform.is_valid():
+            print("cform is valid")
+        bform = BillingForm(self.request.POST)
+        if bform.is_valid():
+            print("bform is valid")
+
+        return redirect('core:checkout-model')
+
+
 
 
 class ProductDetailView(DetailView):
@@ -48,6 +114,7 @@ def add_to_cart(request, slug):
     messages.info(request, '{} Was added to your cart, total quantity: {}'.format(item.title, ordered_item.qty))
     return redirect("core:product", slug=slug)
     # return render(request, "product-page.html", {'slug': slug})
+
 
 @login_required
 def remove_from_cart(request, slug):

@@ -1,0 +1,21 @@
+{% extends 'base.html' %}
+{% load crispy_forms_tags %}
+
+{% block content %}
+    <main class="mt-5 pt-4">
+
+        <form class="container" method="post">
+            {% csrf_token %}
+            {{ forms.sform|crispy }}
+
+            {{ forms.cform|crispy }}
+
+            <div class="conditional" data-cond-option="billing_same_as_shipping" data-cond-value="null">
+                {{ forms.bform|crispy }}
+            </div>
+        <input type="submit">
+
+        </form>
+
+    </main>
+{% endblock %}
