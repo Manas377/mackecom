@@ -1,6 +1,4 @@
 from django import forms
-from django.forms import ModelForm
-from .models import Checkout, ShippingAddress, BillingAddress
 
 STATE = [
     ("ND", "New Delhi"),
@@ -12,7 +10,7 @@ STATE = [
 ]
 
 PAYMENT_MODE = [
-    ("UPI","UPI"),
+    ("UPI", "UPI"),
     ("NB", "Net Banking"),
     ("CDC", "Credit/Debit Card")
 ]
@@ -36,38 +34,6 @@ class CheckoutForm(forms.Form):
     payment_info = forms.ChoiceField(choices=PAYMENT_MODE)
 
 
-class ShippingForm(ModelForm):
-    class Meta:
-        model = ShippingAddress
-        fields = ("apartment", "address1", "address2", "state", "zip", "city")
-        STATE = [
-            ("ND", "New Delhi"),
-            ("UP", "Uttar Pradesh"),
-            ("MP", "Madhya Pradesh"),
-            ("MH", "Maharashtra"),
-            ("GJ", "Gujrat"),
-            ("AP", "Arunachal Pradesh"),
-        ]
-        widgets = {
-            'state': forms.Select(choices=STATE, attrs={'class': 'form-control'})
-        }
 
 
-class BillingForm(ModelForm):
-    class Meta:
-        model = BillingAddress
-        exclude = ["user"]
 
-
-class CheckoutFormStructured(ModelForm):
-    class Meta:
-        model = Checkout
-        fields = ("payment_info", "billing_same_as_shipping")
-        PAYMENT_MODE = [
-            ("UPI", "UPI"),
-            ("NB", "Net Banking"),
-            ("CDC", "Credit/Debit Card")
-        ]
-        widgets = {
-            'payment_info': forms.Select(choices=PAYMENT_MODE, attrs={'class': 'form-control'})
-        }

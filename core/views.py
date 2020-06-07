@@ -7,14 +7,7 @@ from django.contrib import messages
 from django.core.exceptions import ObjectDoesNotExist
 from django.contrib.auth.decorators import login_required
 from django.contrib.auth.mixins import LoginRequiredMixin
-from .forms import CheckoutForm, ShippingForm, BillingForm, CheckoutFormStructured
-from multi_form_view import MultiFormView
-
-# def home_view(request):
-#     context = {
-#         "items": Item.objects.all()
-#     }
-#     return render(request, 'home-page.html', context)
+from .forms import CheckoutForm
 
 
 class HomeView(ListView):
@@ -38,56 +31,10 @@ class CheckoutView(View):
         print(self.request.POST)
         if form.is_valid():
             print("form is valid")
+            print(form.cleaned_data)
             return redirect('core:checkout')
         messages.warning(self.request, "Checkout Failed")
         return redirect('core:checkout')
-
-
-# class CheckoutModel(View):
-#     def get(self, *args, **kwargs):
-#         sform = ShippingForm()
-#         bform = BillingForm()
-#         cform = CheckoutFormStructured()
-#         context = {
-#             'sform': sform,
-#             'bform': bform,
-#             'cform': cform
-#         }
-#         return render(self.request, 'model-form.html', context)
-#
-#     def post(self, *args, **kwargs):
-#         form = CheckoutForm(self.request.POST)
-#         print(self.request.POST)
-#         if form.is_valid():
-#             print("form is valid")
-#             return redirect('core:checkout-model')
-#         messages.warning(self.request, "Checkout Failed")
-#         print("Form Invalid")
-#         return redirect('core:checkout-model')
-
-
-class MultiCheckoutForm(MultiFormView):
-    template_name = "model-form.html"
-    form_classes = {
-        'sform': ShippingForm,
-        'bform': BillingForm,
-        'cform': CheckoutFormStructured
-    }
-
-    def post(self, request, **kwargs):
-        sform = ShippingForm(self.request.POST)
-        if sform.is_valid():
-            print("sform is valid")
-        cform = CheckoutFormStructured(self.request.POST)
-        if cform.is_valid():
-            print("cform is valid")
-        bform = BillingForm(self.request.POST)
-        if bform.is_valid():
-            print("bform is valid")
-
-        return redirect('core:checkout-model')
-
-
 
 
 class ProductDetailView(DetailView):

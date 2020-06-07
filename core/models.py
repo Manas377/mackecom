@@ -5,7 +5,6 @@ from django.urls import reverse
 from django.shortcuts import render
 
 
-
 CATEGORY_CHOICES = (
     ('S', 'SHIRT'),
     ('SW', 'SPORTS WEAR'),
@@ -30,6 +29,7 @@ class Item(models.Model):
     description = models.TextField(max_length=500, blank=True, null=True)
     category = models.CharField(choices=CATEGORY_CHOICES, max_length=2)
     label = models.CharField(choices=LABEL_COLOUR_CHOICES, max_length=2)
+    image = models.ImageField(blank=True, null=True)
 
     def __str__(self):
         return self.title
@@ -126,10 +126,7 @@ class Checkout(models.Model):
     billing_address = models.ForeignKey(BillingAddress, on_delete=models.DO_NOTHING)
     payment_info = models.CharField(choices=PAYMENT_MODE, max_length=3)
 
-    def set_billing(self):
-        if self.billing_same_as_shipping:
-            self.billing_address = self.shipping_address
-            self.save()
+
 
 
 
