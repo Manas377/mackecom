@@ -20,6 +20,7 @@ class CheckoutView(View):
     def get(self, *args, **kwargs):
         form = CheckoutForm
         cart = get_object_or_404(Cart, user=self.request.user)
+
         context = {
             'form': form,
             'cart': cart

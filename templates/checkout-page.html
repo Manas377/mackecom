@@ -17,13 +17,6 @@
           <!--Card-->
           <div class="card">
 
-{#              <div class="card-body">#}
-{#<form method="post">#}
-{#    {% csrf_token %}#}
-{#    {{ form|crispy }}#}
-{#    <input type="submit">#}
-{#</form>#}
-{#                  </div>#}
 
             <!--Card content-->
             <form class="card-body" method="post">
@@ -139,17 +132,15 @@
                 <h6 class="my-0">{{ obj.item.title }}</h6>
                 <small class="text-muted">{{ obj.item.description|truncatechars:40}}</small>
               </div>
-              <span class="text-muted">{{ obj.item.price }}</span>
+              {% if obj.item.discounted_price %}
+              <span class="text-muted">{{ obj.item.discounted_price }}</span>
+                  {% else %}
+                  <span class="text-muted">{{ obj.item.price }}</span>
+              {% endif %}
             </li>
               {% endfor %}
 
-{#            <li class="list-group-item d-flex justify-content-between bg-light">#}
-{#              <div class="text-success">#}
-{#                <h6 class="my-0">Promo code</h6>#}
-{#                <small>EXAMPLECODE</small>#}
-{#              </div>#}
-{#              <span class="text-success">-$5</span>#}
-{#            </li>#}
+
 
             <li class="list-group-item d-flex justify-content-between">
               <span>Total (INR)</span>

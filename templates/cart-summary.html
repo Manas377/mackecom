@@ -6,13 +6,7 @@
 
   <!--Main layout-->
 <main>
-  <div class="mt-5 container">
-{#      {% for i in object.items.all %}#}
-{##}
-{#          <h1>{{ i.item.title }}</h1>#}
-{#          <h1>{{ i.item.price }}</h1>#}
-{#          <h1>{{ i.item.title }}</h1>#}
-{#      {% endfor %}#}
+  <div class="mt-5 container pt-5">
         {% if request.user.is_authenticated %}
          <h1>Order Summary</h1>
               <div class="table-responsive text-nowrap">
